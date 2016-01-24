@@ -48,8 +48,8 @@ if __name__ == '__main__':
         exit(1)
 
     es = Elasticsearch([address])
-
     fp = open(file)
+    lines = 0;
     for i, line in enumerate(fp):
         try:
             parsed_json = json.loads(line)
@@ -57,7 +57,9 @@ if __name__ == '__main__':
             print 'Load', i, 'failed'
 
         put(index_name, doc_type, i, line)
+        lines += 0
 
     fp.close()
+    print lines, 'added.'
 
 
