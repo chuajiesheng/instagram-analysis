@@ -47,21 +47,25 @@ if __name__ == '__main__':
         print 'No import file found, exiting.'
         exit(1)
 
-    starting_id = 0
+    with_id = 1
     if len(sys.argv) > 3:
-        starting_id = int(sys.argv[3])
+        with_id = int(sys.argv[3])
 
     es = Elasticsearch([address])
     fp = open(file)
     lines = 0
     for i, line in enumerate(fp):
-        id = starting_id + i
+        with_id = with_id == 1
         try:
             parsed_json = json.loads(line)
         except ValueError:
             print 'Load', id, 'failed'
 
-        put(index_name, doc_type, id, line)
+        if with_id:
+            put(index_name, doc_type, i, line)
+        else:
+            put(index_name, doc_type, None, line)
+
         lines += 0
 
     fp.close()
