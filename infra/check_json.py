@@ -1,9 +1,7 @@
-from elasticsearch import Elasticsearch
 import sys
 import json
 
 es = None
-
 
 if __name__ == '__main__':
     file = ''
@@ -20,6 +18,8 @@ if __name__ == '__main__':
     for i, line in enumerate(fp):
         try:
             parsed_json = json.loads(line)
+            sys.stdout.write('.')
+            sys.stdout.flush()
         except ValueError:
             print 'Load', i, 'failed'
 
