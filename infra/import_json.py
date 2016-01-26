@@ -117,7 +117,7 @@ if __name__ == '__main__':
         except Exception:
             print 'Retry %s/%s/%s\n%s' % (index_name, doc_type, id, line)
 
-        lines_added += 0
+        lines_added += 1
 
     fp.close()
     print lines_added, 'added.'
