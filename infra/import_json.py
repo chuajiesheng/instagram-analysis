@@ -38,7 +38,7 @@ def print_help():
     print ''
     print '-h', 'Print this help file'
     print '-n', 'Do not use index in index call'
-    print '-d doc_type', 'Print this help file'
+    print '-d doc_type', 'The doc_type for the index'
     print '-f file', 'Import this file'
     print '-o', 'Start reading file at this line'
     print '-s', 'ID for index call start with this value'
