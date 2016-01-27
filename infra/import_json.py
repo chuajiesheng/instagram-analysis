@@ -116,6 +116,7 @@ if __name__ == '__main__':
             put(index_name, doc_type, id, line)
         except Exception:
             print 'Retry %s/%s/%s\n%s' % (index_name, doc_type, id, line)
+            exit(3)
 
         lines_added += 1
 
