@@ -2,34 +2,21 @@ from elasticsearch import Elasticsearch
 import sys
 import json
 import getopt
+import time
 
 es = None
 
 
-def put(index_name, doc_type, id, doc):
+def put(index_name, doc_type, id, doc, tries=0):
     res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc)
     if not res['created']:
         print(index_name + '/' + doc_type + '/' + str(id), res['created'])
+        print 'Retrying after', 10 ** tries
+        time.sleep(10 ** tries)
+        put(index_name, doc_type, id, doc, (tries + 1))
     else:
         sys.stdout.write('.')
         sys.stdout.flush()
-
-
-def get(index_name, doc_type):
-    res = es.get(index=index_name, doc_type=doc_type, id=1)
-    print(res['_source'])
-
-
-def refresh(index_name):
-    es.indices.refresh(index=index_name)
-
-
-def search(index_name, query):
-    res = es.search(index=index_name, body=query)
-
-    print("Got %d Hits:" % res['hits']['total'])
-    for hit in res['hits']['hits']:
-        print("[%(timestamp)s] %(place)s - %(temperature)s by %(device)s" % hit["_source"])
 
 
 def print_help():
