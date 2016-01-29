@@ -29,8 +29,8 @@ def put(index_name, doc_type, id, doc, tries=0):
 def sleep(tries):
     sleep_time = 2 ** tries
 
-    if sleep_time > 150:
-        sleep_time = 150
+    if sleep_time > 120:
+        sleep_time = 120
 
     print 'Sleeping for', sleep_time
     sys.stdout.flush()
