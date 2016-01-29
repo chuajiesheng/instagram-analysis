@@ -8,9 +8,16 @@ es = None
 
 
 def put(index_name, doc_type, id, doc, tries=0):
-    res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc)
-    if not res['created']:
-        print(index_name + '/' + doc_type + '/' + str(id), res['created'])
+    res = None
+    failed = False
+
+    try:
+        res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc)
+    except Exception:
+        failed = True
+
+    if failed or (not res['created']):
+        print('Error:', index_name + '/' + doc_type + '/' + str(id))
         print 'Retrying after', 10 ** tries
         time.sleep(10 ** tries)
         put(index_name, doc_type, id, doc, (tries + 1))
@@ -99,12 +106,7 @@ if __name__ == '__main__':
         except ValueError:
             print 'Load', i, 'failed'
 
-        try:
-            put(index_name, doc_type, id, line)
-        except Exception:
-            print 'Retry %s/%s/%s\n%s' % (index_name, doc_type, id, line)
-            exit(3)
-
+        put(index_name, doc_type, id, line)
         lines_added += 1
 
     fp.close()
