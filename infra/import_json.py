@@ -20,21 +20,19 @@ def put(index_name, doc_type, id, doc, tries=0):
         print 'Error:', index_name + '/' + doc_type + '/' + str(id)
         sleep(tries)
         put(index_name, doc_type, id, doc, (tries + 1))
-    else:
-        sys.stdout.write('.')
-        sys.stdout.flush()
+        print 'Error cleared'
+
+    sys.stdout.write('.')
+    sys.stdout.flush()
 
 
 def sleep(tries):
     sleep_time = 2 ** tries
 
-    if sleep_time > 300:
-        sleep_time = 300
+    if sleep_time > 150:
+        sleep_time = 150
 
     print 'Sleeping for', sleep_time
-
-    wake_up = time.time() + sleep_time
-    print 'Waking up at', wake_up.strftime('%H:%M:%S')
     sys.stdout.flush()
 
     time.sleep(sleep_time)
