@@ -71,7 +71,7 @@ if __name__ == '__main__':
             except ValueError:
                 print 'Parse failed', filename, i
 
-            indexed = put(index_name, doc_type, id, line)
+            indexed = put(index_name, doc_type, None, line)
             file_lines_added += indexed
 
         print file_lines_added, 'added from', filename
