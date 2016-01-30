@@ -66,11 +66,6 @@ if __name__ == '__main__':
         file_lines_added = 0
 
         for i, line in enumerate(fp):
-            try:
-                parsed_json = json.loads(line)
-            except ValueError:
-                print 'Parse failed', filename, i
-
             indexed = put(index_name, doc_type, None, line)
             file_lines_added += indexed
 
