@@ -13,14 +13,16 @@ def put(index_name, doc_type, id, doc, tries=0):
 
     try:
         res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc)
-    except Exception:
+    except Exception as e:
+        print str(e)
         failed = True
 
     if failed or (not res['created']):
+        print 'res[created]', str(res)
         print 'Error', index_name + '/' + doc_type + '/' + str(id)
 
         if tries > 5:
-            error_file = open('error.json')
+            error_file = open('error.json', 'w+')
             error_file.write(doc + '\n')
             error_file.close()
             print 'Error output'
