@@ -21,16 +21,16 @@ def put(index_name, doc_type, id, doc, tries=0):
         print 'res[created]', str(res)
         print 'Error', index_name + '/' + doc_type + '/' + str(id)
 
-        if tries > 5:
+        if tries > 2:
             error_file = open('error.json', 'w+')
             error_file.write(doc + '\n')
             error_file.close()
-            print 'Error output'
+            print 'Error output\n'
             return 0
         else:
             sleep(tries)
             indexed = put(index_name, doc_type, id, doc, (tries + 1))
-            print 'Error cleared'
+            print 'Error cleared\n'
             return indexed
     else:
         sys.stdout.write('.')
@@ -40,9 +40,6 @@ def put(index_name, doc_type, id, doc, tries=0):
 
 def sleep(tries):
     sleep_time = 2 ** tries
-
-    if sleep_time > 120:
-        sleep_time = 120
 
     print 'Sleeping for', sleep_time
     sys.stdout.flush()
@@ -61,7 +58,7 @@ if __name__ == '__main__':
     total_lines_added = 0
 
     for filename in glob.glob('in/*.json'):
-        print 'Reading', filename
+        print '\nReading', filename
         fp = open(filename)
         file_lines_added = 0
 
