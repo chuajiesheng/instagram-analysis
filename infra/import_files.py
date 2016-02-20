@@ -48,7 +48,7 @@ def sleep(tries):
 
 
 if __name__ == '__main__':
-    address = 'http://localhost:9200'
+    address = 'http://10.5.0.61:9200'
     index_name = 'instagram'
     doc_type = sys.argv[1]
     print 'Index', address + '/' + index_name + '/' + doc_type
