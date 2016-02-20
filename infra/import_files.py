@@ -12,7 +12,7 @@ def put(index_name, doc_type, id, doc, tries=0):
     failed = False
 
     try:
-        res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc)
+        res = es.index(index=index_name, doc_type=doc_type, id=id, body=doc, request_timeout=300)
     except Exception as e:
         print str(e)
         failed = True
