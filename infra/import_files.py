@@ -66,7 +66,7 @@ if __name__ == '__main__':
             indexed = put(index_name, doc_type, None, line)
             file_lines_added += indexed
 
-        print file_lines_added, 'added from', filename
+        print '\n', file_lines_added, 'added from', filename
         total_lines_added += file_lines_added
         fp.close()
 
