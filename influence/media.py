@@ -7,7 +7,7 @@ class Media:
     json = None
 
     def __init__(self, json):
-        self.json = json['_source']
+        self.json = json
 
     def id(self):
         return self.json['id']
@@ -21,11 +21,12 @@ class MediaHelper:
         json = MediaHelper.download(media_id)
         dataset = json['hits']['hits']
         for obj in dataset:
-            media = Media(obj)
+            media = Media(obj['_source'])
 
             if media.id() == media_id:
                 return media
 
+        return None
 
     @staticmethod
     def download(media_id):
