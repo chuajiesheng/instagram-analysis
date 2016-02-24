@@ -12,6 +12,12 @@ class Media:
     def id(self):
         return self.json['id']
 
+    def caption(self):
+        return self.json['caption']
+
+    def caption_id(self):
+        return self.caption()['id']
+
 class MediaHelper:
     def __init__(self):
         pass
@@ -55,4 +61,4 @@ if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
 
-    print MediaHelper.get_media(MEDIA_ID).id()
+    print MediaHelper.get_media(MEDIA_ID).caption_id()
