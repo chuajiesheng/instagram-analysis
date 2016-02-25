@@ -33,6 +33,7 @@ class Comment:
     def user_full_name(self):
         return self.user()['full_name']
 
+
 class CommentHelper:
     def __init__(self):
         pass
