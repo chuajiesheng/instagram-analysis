@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 from elasticsearch import Elasticsearch
 
@@ -11,7 +10,16 @@ class Relationship:
         self.json = json
 
     def cycle_id(self):
+        if self.json is None:
+            return -1
+
         return int(self.json['cycle_id'])
+
+    def followers(self):
+        if self.json is None:
+            return []
+
+        return self.json['followers_id']
 
 
 class RelationshipHelper:
@@ -22,15 +30,14 @@ class RelationshipHelper:
 
     @staticmethod
     def get_relationship(insta_user_id):
-        relationship = None
+        relationship = Relationship(None)
 
         json = RelationshipHelper.download(insta_user_id)
+        print 'get_relationship of', insta_user_id
         dataset = json['hits']['hits']
         for obj in dataset:
             r = Relationship(obj['_source'])
-            if relationship is None:
-                relationship = r
-            elif r.cycle_id() > relationship.cycle_id():
+            if r.cycle_id() > relationship.cycle_id():
                 relationship = r
 
         return relationship
@@ -83,6 +90,6 @@ class RelationshipHelper:
 
 
 if __name__ == '__main__':
-    INSTA_USER_ID = '269959784'
+    INSTA_USER_ID = '1946547496'
     r = RelationshipHelper.get_relationship(INSTA_USER_ID)
     print r.json
