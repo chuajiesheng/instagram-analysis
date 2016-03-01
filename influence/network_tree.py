@@ -2,7 +2,7 @@ import networkx as nx
 import relationship as rs
 
 
-INIT_INSTA_USER_ID = '35720927'
+INIT_INSTA_USER_ID = '1438863821'
 nodes = dict()
 
 
@@ -14,16 +14,19 @@ def add_child(graph, source_node, source_node_level):
     r = rs.RelationshipHelper.get_relationship(source_node)
     i = 0
 
-    for follower in r.followers():
-        if i > 100:
-            continue
+    if len(r.followers()) == 0:
+        error_file = open('missing_relationship.txt', 'a')
+        error_file.write(source_node + '\n')
+        error_file.close()
+        print source_node, 'empty'
 
+    for follower in r.followers():
         if follower in nodes.keys():
             continue
 
         nodes[follower] = source_node_level + 1
-        # graph.add_node(follower)
-        # graph.add_edge(source_node, follower)
+        graph.add_node(follower)
+        graph.add_edge(source_node, follower)
 
         i += 1
         if i % 10000 == 0:
