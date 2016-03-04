@@ -32,7 +32,12 @@ class RealtimeRelationshipHelper:
         response = urllib.urlopen(url)
         data = json.loads(response.read())
 
-        next_url = data['pagination']['next_url']
+        code = data['meta']['code']
+        if code != 200:
+            return None, []
+
+        pagination = data['pagination']
+        next_url = pagination['next_url'] if (pagination is not None and 'next_url' in pagination) else None
         followed_by = [user['id'] for user in data['data']]
         return next_url, followed_by
 
