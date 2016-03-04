@@ -18,12 +18,22 @@ class Media:
     def caption_id(self):
         return self.caption()['id']
 
+    def user(self):
+        return self.json['user']
+
+    def username(self):
+        return self.user()['username']
+
+    def user_id(self):
+        return self.user()['id']
+
 class MediaHelper:
     def __init__(self):
         pass
 
     @staticmethod
     def get_media(media_id):
+        print 'downloading media', media_id
         json = MediaHelper.download(media_id)
         dataset = json['hits']['hits']
         for obj in dataset:
