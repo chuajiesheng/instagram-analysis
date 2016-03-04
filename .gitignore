@@ -60,5 +60,7 @@ target/
 # IDEA
 .idea
 
-# Data IN
+# Project specific
 influence/in
+*.graphml
+
