@@ -49,13 +49,13 @@ def add_comment(graph, source_node, source_node_level):
             graph.add_edge(source_node, user, comment_id=comment.id())
             comments.remove(comment)
 
+    print 'left', len(comments), 'comments'
+
     i = 0
     for user in intersection:
         i += 1
         print 'level', source_node_level, 'at', i, 'of', len(intersection)
         add_comment(graph, user, source_node_level + 1)
-
-    print 'left', len(comments), 'comments'
 
 
 if __name__ == '__main__':
