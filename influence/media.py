@@ -46,6 +46,9 @@ class MediaHelper:
 
     @staticmethod
     def download(media_id):
+        host = ['http://localhost:9200']
+        es = Elasticsearch(host)
+
         query = {
             "query": {
                 "bool": {
@@ -67,8 +70,5 @@ class MediaHelper:
 
 if __name__ == '__main__':
     MEDIA_ID = '1108626510904721584_35720927'
-
-    host = ['http://localhost:9200']
-    es = Elasticsearch(host)
 
     print MediaHelper.get_media(MEDIA_ID).caption_id()
