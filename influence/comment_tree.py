@@ -2,6 +2,7 @@ import networkx as nx
 import relationship as rs
 import media as me
 import comment as co
+import realtime_relationship as rr
 from elasticsearch import Elasticsearch
 
 
@@ -10,21 +11,31 @@ comments = []
 nodes = dict()
 
 
+def get_relationship(source_node):
+    followers = rs.RelationshipHelper.get_relationship(source_node).followers()
+
+    if len(followers) == 0:
+        followers = rr.RealtimeRelationshipHelper.download_all(source_node)
+        print 'obtained', len(followers), 'relationship real-time'
+
+    return followers
+
+
 def add_comment(graph, source_node, source_node_level):
     print source_node, 'at level', source_node_level
     if source_node_level > 5:
         return
 
-    r = rs.RelationshipHelper.get_relationship(source_node)
+    followers = get_relationship(source_node)
 
-    if len(r.followers()) == 0:
+    if len(followers) == 0:
         error_file = open('missing_relationship.txt', 'a')
         error_file.write(source_node + '\n')
         error_file.close()
         print source_node, 'empty'
         return
 
-    followers_set = set(r.followers())
+    followers_set = set(followers)
     comment_user_set = set([comment.user_id() for comment in comments])
     intersection = followers_set.intersection(comment_user_set)
     print 'found', len(intersection), 'for', source_node
