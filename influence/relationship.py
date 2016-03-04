@@ -57,9 +57,11 @@ class RelationshipHelper:
             "sort": {
                 "cycle_id": {
                     "order": "desc",
-                    "mode": "min"
+                    "mode":  "min"
                 }
-            }
+            },
+            "from": 0,
+            "size": 1
         }
         host = ['http://localhost:9200']
         es = Elasticsearch(host)
