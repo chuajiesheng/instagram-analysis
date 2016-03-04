@@ -44,7 +44,7 @@ def add_comment(graph, source_node, source_node_level):
     for user in intersection:
         graph.add_node(user)
 
-        comments_by_user = (comment for comment in comments if comment.user_id() == user)
+        comments_by_user = filter(lambda c: c.user_id() == user, comments)
         for comment in comments_by_user:
             graph.add_edge(source_node, user, comment_id=comment.id())
             comments.remove(comment)
