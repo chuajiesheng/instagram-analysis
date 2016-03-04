@@ -7,6 +7,7 @@ from elasticsearch import Elasticsearch
 
 
 MEDIA_ID = '1107620890619006408_256997418' # https://www.instagram.com/p/9fD1TjJc3I/
+FILENAME = 'run/comment_network_{}.graphml'
 comments = []
 nodes = dict()
 
@@ -68,4 +69,5 @@ if __name__ == '__main__':
 
     add_comment(G, media.user_id(), 0)
 
-    nx.write_graphml(G, "comment_network.graphml")
+    filename = FILENAME.format(MEDIA_ID)
+    nx.write_graphml(G, filename)
