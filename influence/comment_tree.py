@@ -4,10 +4,12 @@ import media as me
 import comment as co
 import realtime_relationship as rr
 from elasticsearch import Elasticsearch
+import matplotlib.pyplot as plt
 
 
 MEDIA_ID = '1107620890619006408_256997418' # https://www.instagram.com/p/9fD1TjJc3I/
 FILENAME = 'run/comment_network_{}.graphml'
+IMAGE_FILENAME = 'run/comment_network_{}.png'
 comments = []
 nodes = dict()
 
@@ -71,3 +73,7 @@ if __name__ == '__main__':
 
     filename = FILENAME.format(MEDIA_ID)
     nx.write_graphml(G, filename)
+
+    nx.draw(G)
+    plt.show(block=False)
+    plt.savefig(IMAGE_FILENAME.format(MEDIA_ID), format="PNG")
