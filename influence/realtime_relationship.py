@@ -32,7 +32,7 @@ class RealtimeRelationshipHelper:
         response = urllib.urlopen(url)
         data = json.loads(response.read())
 
-        code = data['meta']['code']
+        code = response.getcode()
         if code != 200:
             return None, []
 
