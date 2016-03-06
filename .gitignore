@@ -63,4 +63,4 @@ target/
 # Project specific
 influence/in
 *.graphml
-
+influence/run
