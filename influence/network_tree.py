@@ -3,6 +3,7 @@ import relationship as rs
 
 
 INIT_INSTA_USER_ID = '1438863821'
+MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 nodes = dict()
 
 
@@ -15,7 +16,7 @@ def add_child(graph, source_node, source_node_level):
     i = 0
 
     if len(r.followers()) == 0:
-        error_file = open('missing_relationship.txt', 'a')
+        error_file = open(MISSING_RELATIONSHIP, 'a')
         error_file.write(source_node + '\n')
         error_file.close()
         print source_node, 'empty'

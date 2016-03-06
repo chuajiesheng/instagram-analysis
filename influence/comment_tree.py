@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 MEDIA_ID = '1107620890619006408_256997418' # https://www.instagram.com/p/9fD1TjJc3I/
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
+MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 comments = []
 nodes = dict()
 
@@ -32,7 +33,7 @@ def add_comment(graph, source_node, source_node_level):
     followers = get_relationship(source_node)
 
     if len(followers) == 0:
-        error_file = open('missing_relationship.txt', 'a')
+        error_file = open(MISSING_RELATIONSHIP, 'a')
         error_file.write(source_node + '\n')
         error_file.close()
         print source_node, 'empty'
