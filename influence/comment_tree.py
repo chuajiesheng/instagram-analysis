@@ -25,6 +25,23 @@ def get_relationship(source_node):
     return followers
 
 
+def find_intersected_followers(followers):
+    followers_set = set(followers)
+    comment_user_set = set([comment.user_id() for comment in comments])
+    intersection = followers_set.intersection(comment_user_set)
+    return intersection
+
+
+def add_edges(graph, intersection, source_node):
+    for user in intersection:
+        graph.add_node(user)
+
+        comments_by_user = filter(lambda c: c.user_id() == user, comments)
+        for comment in comments_by_user:
+            graph.add_edge(source_node, user, comment_id=comment.id())
+            comments.remove(comment)
+
+
 def add_comment(graph, source_node, source_node_level):
     print source_node, 'at level', source_node_level
     if source_node_level > 5:
@@ -39,18 +56,10 @@ def add_comment(graph, source_node, source_node_level):
         print source_node, 'empty'
         return
 
-    followers_set = set(followers)
-    comment_user_set = set([comment.user_id() for comment in comments])
-    intersection = followers_set.intersection(comment_user_set)
+    intersection = find_intersected_followers(followers)
     print 'found', len(intersection), 'for', source_node
 
-    for user in intersection:
-        graph.add_node(user)
-
-        comments_by_user = filter(lambda c: c.user_id() == user, comments)
-        for comment in comments_by_user:
-            graph.add_edge(source_node, user, comment_id=comment.id())
-            comments.remove(comment)
+    add_edges(graph, intersection, source_node)
 
     print 'left', len(comments), 'comments'
 
