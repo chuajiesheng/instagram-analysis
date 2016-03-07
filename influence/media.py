@@ -12,6 +12,9 @@ class Media:
     def id(self):
         return self.json['id']
 
+    def created_time(self):
+        return int(self.json['created_time'])
+
     def caption(self):
         return self.json['caption']
 

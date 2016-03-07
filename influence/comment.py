@@ -13,7 +13,7 @@ class Comment:
         return self.json['id']
 
     def created_time(self):
-        return self.json['created_time']
+        return int(self.json['created_time'])
 
     def text(self):
         return self.json['text']

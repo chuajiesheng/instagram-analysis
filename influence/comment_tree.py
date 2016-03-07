@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch
 import matplotlib.pyplot as plt
 
 
-MEDIA_ID = '1107620890619006408_256997418' # https://www.instagram.com/p/9fD1TjJc3I/
+MEDIA_ID = '1101457419536463341_1507143100' # https://www.instagram.com/p/9fD1TjJc3I/
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
@@ -38,7 +38,8 @@ def add_edges(graph, intersection, source_node):
 
         comments_by_user = filter(lambda c: c.user_id() == user, comments)
         for comment in comments_by_user:
-            graph.add_edge(source_node, user, comment_id=comment.id())
+            created_time = comment.created_time()
+            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time)
             comments.remove(comment)
 
 
@@ -58,16 +59,8 @@ def add_comment(graph, source_node, source_node_level):
 
     intersection = find_intersected_followers(followers)
     print 'found', len(intersection), 'for', source_node
-
     add_edges(graph, intersection, source_node)
-
-    print 'left', len(comments), 'comments'
-
-    i = 0
-    for user in intersection:
-        i += 1
-        print 'level', source_node_level, 'at', i, 'of', len(intersection)
-        add_comment(graph, user, source_node_level + 1)
+    map(lambda c: add_comment(graph, c, source_node_level + 1), intersection)
 
 
 if __name__ == '__main__':
