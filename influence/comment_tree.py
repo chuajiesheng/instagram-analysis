@@ -90,7 +90,7 @@ def output_script_file(graph):
 
     for edge in graph.edges():
         # code.interact(local=locals())
-        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], 'comment'))
+        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], 'default'))
 
     script_file.write('];')
     script_file.close()
