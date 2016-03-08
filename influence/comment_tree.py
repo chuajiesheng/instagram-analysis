@@ -90,7 +90,11 @@ def output_script_file(graph):
 
     for edge in graph.edges():
         # code.interact(local=locals())
-        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], 'default'))
+        edge_type = 'default'
+        if edge[2]['time_diff'] != edge[2]['created_time']:
+            edge_type = 'influence'
+
+        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], edge_type))
 
     script_file.write('];')
     script_file.close()
