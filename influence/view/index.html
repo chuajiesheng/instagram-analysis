@@ -51,15 +51,17 @@
         link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
     });
 
-    var width = 1600,
-            height = 800;
+    var width = 1600;
+    var height = 800;
+    var link_distance = 60;
+    var charge = -300;
 
     var force = d3.layout.force()
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height])
-            .linkDistance(60)
-            .charge(-300)
+            .linkDistance(link_distance)
+            .charge(charge)
             .on("tick", tick)
             .start();
 
