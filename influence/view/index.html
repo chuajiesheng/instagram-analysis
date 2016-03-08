@@ -13,19 +13,15 @@
         stroke-width: 1.5px;
     }
 
-    #licensing {
+    #green_arrowhead {
         fill: green;
     }
 
-    #comment {
-        fill: blue;
-    }
-
-    .link.licensing {
+    .link.green_edge {
         stroke: green;
     }
 
-    .link.resolved {
+    .link.dotted {
         stroke-dasharray: 0, 2 1;
     }
 
@@ -55,8 +51,8 @@
         link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
     });
 
-    var width = 960,
-            height = 500;
+    var width = 1600,
+            height = 800;
 
     var force = d3.layout.force()
             .nodes(d3.values(nodes))
@@ -73,7 +69,7 @@
 
     // Per-type markers, as they don't inherit styles.
     svg.append("defs").selectAll("marker")
-            .data(["suit", "licensing", "resolved"])
+            .data(["default", "green_arrowhead", "dotted", "green_edge"])
             .enter().append("marker")
             .attr("id", function (d) {
                 return d;
