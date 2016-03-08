@@ -5,6 +5,7 @@ import comment as co
 import realtime_relationship as rr
 from elasticsearch import Elasticsearch
 import matplotlib.pyplot as plt
+import code
 
 
 MEDIA_ID = '1101457419536463341_1507143100' # https://www.instagram.com/p/9fD1TjJc3I/
@@ -20,7 +21,6 @@ def get_relationship(source_node):
 
     if len(followers) == 0:
         followers = rr.RealtimeRelationshipHelper.download_all(source_node)
-        print 'obtained', len(followers), 'relationship real-time'
 
     return followers
 
@@ -32,19 +32,41 @@ def find_intersected_followers(followers):
     return intersection
 
 
+def get_latest_incoming_edge(graph, source_node, comment):
+    lower_limit = 0
+    upper_limit = comment.created_time()
+
+    edges = graph.in_edges(source_node, data=True)
+
+    if len(edges) > 0:
+        print 'given', source_node, 'found', edges
+
+    for edge in edges:
+        # code.interact(local=locals())
+        created_time = int(edge[2]['created_time'])
+        if lower_limit < created_time < upper_limit:
+            lower_limit = created_time
+
+    return lower_limit
+
+
+
 def add_edges(graph, intersection, source_node):
     for user in intersection:
-        graph.add_node(user)
-
         comments_by_user = filter(lambda c: c.user_id() == user, comments)
         for comment in comments_by_user:
             created_time = comment.created_time()
-            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time)
+            latest_influence_comment = get_latest_incoming_edge(graph, source_node, comment)
+            time_diff = created_time - latest_influence_comment
+
+            if time_diff < 0:
+                print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
+
+            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time, time_diff=time_diff)
             comments.remove(comment)
 
 
 def add_comment(graph, source_node, source_node_level):
-    print source_node, 'at level', source_node_level
     if source_node_level > 5:
         return
 
@@ -54,11 +76,9 @@ def add_comment(graph, source_node, source_node_level):
         error_file = open(MISSING_RELATIONSHIP, 'a')
         error_file.write(source_node + '\n')
         error_file.close()
-        print source_node, 'empty'
         return
 
     intersection = find_intersected_followers(followers)
-    print 'found', len(intersection), 'for', source_node
     add_edges(graph, intersection, source_node)
     map(lambda c: add_comment(graph, c, source_node_level + 1), intersection)
 
@@ -69,8 +89,8 @@ if __name__ == '__main__':
     media = me.MediaHelper.get_media(MEDIA_ID)
     comments = co.CommentHelper.get_comment(MEDIA_ID)
 
-    G = nx.Graph()
-    G.add_node(media.user_id(), username=media.username())
+    G = nx.DiGraph()
+    G.add_node(media.user_id(), username=media.username(), link=media.link())
 
     add_comment(G, media.user_id(), 0)
 

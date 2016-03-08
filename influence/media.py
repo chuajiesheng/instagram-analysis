@@ -18,6 +18,9 @@ class Media:
     def caption(self):
         return self.json['caption']
 
+    def link(self):
+        return self.json['link']
+
     def caption_id(self):
         return self.caption()['id']
 
