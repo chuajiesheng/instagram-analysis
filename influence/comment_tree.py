@@ -12,6 +12,8 @@ MEDIA_ID = '1101457419536463341_1507143100' # https://www.instagram.com/p/9fD1Tj
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
+JSON_SCRIPT_FILE = 'run/comment_network_{}.js'
+JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", type: \"%s\"},"
 comments = []
 nodes = dict()
 
@@ -42,7 +44,6 @@ def get_latest_incoming_edge(graph, source_node, comment):
         print 'given', source_node, 'found', edges
 
     for edge in edges:
-        # code.interact(local=locals())
         created_time = int(edge[2]['created_time'])
         if lower_limit < created_time < upper_limit:
             lower_limit = created_time
@@ -83,6 +84,18 @@ def add_comment(graph, source_node, source_node_level):
     map(lambda c: add_comment(graph, c, source_node_level + 1), intersection)
 
 
+def output_script_file(graph):
+    script_file = open(JSON_SCRIPT_FILE.format(MEDIA_ID), 'w')
+    script_file.write('var links = [')
+
+    for edge in graph.edges():
+        # code.interact(local=locals())
+        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], 'comment'))
+
+    script_file.write('];')
+    script_file.close()
+
+
 if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
@@ -100,3 +113,5 @@ if __name__ == '__main__':
     nx.draw(G)
     plt.show(block=False)
     plt.savefig(IMAGE_FILENAME.format(MEDIA_ID), format="PNG")
+
+    output_script_file(G)
