@@ -88,7 +88,7 @@ def output_script_file(graph):
     script_file = open(JSON_SCRIPT_FILE.format(MEDIA_ID), 'w')
     script_file.write('var links = [')
 
-    for edge in graph.edges():
+    for edge in graph.edges(data=True):
         # code.interact(local=locals())
         edge_type = 'default'
         if edge[2]['time_diff'] != edge[2]['created_time']:

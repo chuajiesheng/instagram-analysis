@@ -21,6 +21,10 @@
         stroke: green;
     }
 
+    .link.influence {
+        stroke: red;
+    }
+
     .link.dotted {
         stroke-dasharray: 0, 2 1;
     }
@@ -71,7 +75,7 @@
 
     // Per-type markers, as they don't inherit styles.
     svg.append("defs").selectAll("marker")
-            .data(["default", "green_arrowhead", "dotted", "green_edge"])
+            .data(["default", "influence", "green_arrowhead", "dotted", "green_edge"])
             .enter().append("marker")
             .attr("id", function (d) {
                 return d;
