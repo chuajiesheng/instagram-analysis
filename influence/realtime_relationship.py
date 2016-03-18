@@ -28,6 +28,7 @@ class RealtimeRelationshipHelper:
 
     @staticmethod
     def download(url):
+        print 'downloading', url
         response = urllib.urlopen(url)
         data = json.loads(response.read())
 

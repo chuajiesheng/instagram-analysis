@@ -90,8 +90,8 @@ def add_comment(graph, source_node, source_node_level):
     map(lambda c: add_comment(graph, c, source_node_level + 1), intersection)
 
 
-def output_script_file(graph):
-    script_file = open(JSON_SCRIPT_FILE.format(MEDIA_ID), 'w')
+def output_script_file(graph, media_id):
+    script_file = open(JSON_SCRIPT_FILE.format(media_id), 'w')
     script_file.write('var links = [')
 
     for edge in graph.edges(data=True):
@@ -138,6 +138,8 @@ if __name__ == '__main__':
     add_comment(G, media.user_id(), 0)
     calculate_total_influence(G, media.user_id(), media.user_id())
 
+    output_script_file(G, MEDIA_ID)
+
     filename = FILENAME.format(MEDIA_ID)
     nx.write_graphml(G, filename)
 
@@ -145,4 +147,3 @@ if __name__ == '__main__':
     plt.show(block=False)
     plt.savefig(IMAGE_FILENAME.format(MEDIA_ID), format="PNG")
 
-    output_script_file(G)
