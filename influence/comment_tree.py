@@ -15,7 +15,7 @@ FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 JSON_SCRIPT_FILE = 'run/comment_network_{}.js'
-JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", type: \"%s\"},"
+JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", influence: \"%s\", type: \"%s\"},"
 comments = []
 nodes = dict()
 
@@ -66,9 +66,10 @@ def add_edges(graph, intersection, source_node):
             if time_diff.seconds < 0:
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
+            print 'adding edge', source_node, user
+            graph.add_node(user, username=comment.username())
             graph.add_edge(source_node, user,
                            comment_id=comment.id(), comment=comment.text(),
-                           username=comment.username(),
                            created_time=created_time, time_diff=time_diff.seconds, influence=influence)
             comments.remove(comment)
 
@@ -95,27 +96,34 @@ def output_script_file(graph):
     script_file.write('var links = [')
 
     for edge in graph.edges(data=True):
+        source_node = edge[0]
+        source_node_name = graph.node[source_node]['username']
+
+        node = edge[1]
+        node_name = graph.node[node]['username']
+
         edge_type = 'default'
-        if edge[2]['time_diff'] != edge[2]['created_time']:
+        if edge[2]['influence'] > 0:
             edge_type = 'influence'
 
-        script_file.write(JSON_OBJECT_TEMPLATE % (edge[0], edge[1], edge_type))
+        script_file.write(JSON_OBJECT_TEMPLATE %
+                          (source_node_name, node_name, graph.node[node]['total_influence'], edge_type))
 
     script_file.write('];')
     script_file.close()
 
 
-def calculate_total_influence(graph, source_node):
+def calculate_total_influence(graph, root_node, source_node):
     total_influence = 0.0
-    for edge in graph.edges(source_node, data=True):
-        code.interact(local=locals())
-        data = edge[2]
-        total_influence += data['influence']
-
-        next_node = edge[1]
-        total_influence += calculate_total_influence(graph, next_node)
+    for node in graph[source_node].keys():
+        edge = graph[source_node][node]
+        total_influence += edge['influence']
+        # code.interact(local=locals())
+        if node != root_node:
+            total_influence += calculate_total_influence(graph, root_node, node)
 
     print 'total_influence', source_node, total_influence
+    graph[source_node]['total_influence'] = total_influence
     return total_influence
 
 if __name__ == '__main__':
@@ -128,7 +136,7 @@ if __name__ == '__main__':
     G.add_node(media.user_id(), username=media.username(), link=media.link())
 
     add_comment(G, media.user_id(), 0)
-    calculate_total_influence(G, media.user_id())
+    calculate_total_influence(G, media.user_id(), media.user_id())
 
     filename = FILENAME.format(MEDIA_ID)
     nx.write_graphml(G, filename)
