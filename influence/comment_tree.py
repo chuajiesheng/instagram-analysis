@@ -66,7 +66,10 @@ def add_edges(graph, intersection, source_node):
             if time_diff.seconds < 0:
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
-            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time, time_diff=time_diff.seconds, influence=influence)
+            graph.add_edge(source_node, user,
+                           comment_id=comment.id(), comment=comment.text(),
+                           username=comment.username(),
+                           created_time=created_time, time_diff=time_diff.seconds, influence=influence)
             comments.remove(comment)
 
 
