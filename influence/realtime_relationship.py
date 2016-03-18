@@ -29,8 +29,22 @@ class RealtimeRelationshipHelper:
     @staticmethod
     def download(url):
         print 'downloading', url
-        response = urllib.urlopen(url)
-        data = json.loads(response.read())
+        response = None
+        data = None
+
+        try:
+            response = urllib.urlopen(url)
+            data = json.loads(response.read())
+        except IOError, e:
+            print 'caught', e
+            print 'retrying'
+            response = urllib.urlopen(url)
+            data = json.loads(response.read())
+        except ValueError, e:
+            print 'caught', e
+            print 'retrying'
+            response = urllib.urlopen(url)
+            data = json.loads(response.read())
 
         code = response.getcode()
         if code != 200:
