@@ -102,6 +102,15 @@ def output_script_file(graph):
     script_file.close()
 
 
+def calculate_total_influence(graph, source_node):
+    total_influence = 0
+    code.interact(local=locals())
+    for edge in graph.out_edges(source_node, data=True):
+        next_node = edge[1]
+        total_influence += calculate_total_influence(graph, next_node)
+    print 'total_influence', source_node, total_influence
+    return total_influence
+
 if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
@@ -112,6 +121,7 @@ if __name__ == '__main__':
     G.add_node(media.user_id(), username=media.username(), link=media.link())
 
     add_comment(G, media.user_id(), 0)
+    calculate_total_influence(G, media.user_id())
 
     filename = FILENAME.format(MEDIA_ID)
     nx.write_graphml(G, filename)
