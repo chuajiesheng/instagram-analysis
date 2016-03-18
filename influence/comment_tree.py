@@ -10,7 +10,7 @@ import code
 from datetime import datetime
 
 
-MEDIA_ID = '1101457419536463341_1507143100' # https://www.instagram.com/p/9fD1TjJc3I/
+MEDIA_IDS = ['1101457419536463341_1507143100'] # https://www.instagram.com/p/9fD1TjJc3I/
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
@@ -129,21 +129,25 @@ if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
 
-    media = me.MediaHelper.get_media(MEDIA_ID)
-    comments = co.CommentHelper.get_comment(MEDIA_ID)
+    for media_id in MEDIA_IDS:
+        print 'running', media_id
+        comments = []
 
-    G = nx.DiGraph()
-    G.add_node(media.user_id(), username=media.username(), link=media.link(), total_influence=0.0)
+        media = me.MediaHelper.get_media(media_id)
+        comments = co.CommentHelper.get_comment(media_id)
 
-    add_comment(G, media.user_id(), 0)
-    calculate_total_influence(G, media.user_id(), media.user_id())
+        G = nx.DiGraph()
+        G.add_node(media.user_id(), username=media.username(), link=media.link(), total_influence=0.0)
 
-    output_script_file(G, MEDIA_ID)
+        add_comment(G, media.user_id(), 0)
+        calculate_total_influence(G, media.user_id(), media.user_id())
 
-    filename = FILENAME.format(MEDIA_ID)
-    nx.write_graphml(G, filename)
+        output_script_file(G, media_id)
 
-    nx.draw(G)
-    plt.show(block=False)
-    plt.savefig(IMAGE_FILENAME.format(MEDIA_ID), format="PNG")
+        filename = FILENAME.format(media_id)
+        nx.write_graphml(G, filename)
+
+        nx.draw(G)
+        plt.show(block=False)
+        plt.savefig(IMAGE_FILENAME.format(media_id), format="PNG")
 
