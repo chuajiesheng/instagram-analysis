@@ -29,7 +29,14 @@ class RealtimeRelationshipHelper:
 
     @staticmethod
     def download(url):
-        response = urllib.urlopen(url)
+        response = None
+
+        try:
+            response = urllib.urlopen(url)
+        except urllib.HTTPError, e:
+            print e.fp.read()
+            return None, []
+
         data = json.loads(response.read())
 
         code = response.getcode()
