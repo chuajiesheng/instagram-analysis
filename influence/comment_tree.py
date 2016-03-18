@@ -106,11 +106,15 @@ def output_script_file(graph):
 
 
 def calculate_total_influence(graph, source_node):
-    total_influence = 0
-    code.interact(local=locals())
-    for edge in graph.out_edges(source_node, data=True):
+    total_influence = 0.0
+    for edge in graph.edges(source_node, data=True):
+        code.interact(local=locals())
+        data = edge[2]
+        total_influence += data['influence']
+
         next_node = edge[1]
         total_influence += calculate_total_influence(graph, next_node)
+
     print 'total_influence', source_node, total_influence
     return total_influence
 
