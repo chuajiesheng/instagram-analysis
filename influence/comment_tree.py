@@ -5,7 +5,9 @@ import comment as co
 import realtime_relationship as rr
 from elasticsearch import Elasticsearch
 import matplotlib.pyplot as plt
+import math
 import code
+from datetime import datetime
 
 
 MEDIA_ID = '1101457419536463341_1507143100' # https://www.instagram.com/p/9fD1TjJc3I/
@@ -51,19 +53,20 @@ def get_latest_incoming_edge(graph, source_node, comment):
     return lower_limit
 
 
-
 def add_edges(graph, intersection, source_node):
     for user in intersection:
         comments_by_user = filter(lambda c: c.user_id() == user, comments)
         for comment in comments_by_user:
             created_time = comment.created_time()
             latest_influence_comment = get_latest_incoming_edge(graph, source_node, comment)
-            time_diff = created_time - latest_influence_comment
+            time_diff = datetime.utcfromtimestamp(float(created_time)) - datetime.utcfromtimestamp(float(latest_influence_comment))
+            time_diff_in_hours = math.ceil(float(time_diff.seconds) / 60 / 60)
+            influence = 1 / time_diff_in_hours
 
-            if time_diff < 0:
+            if time_diff.seconds < 0:
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
-            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time, time_diff=time_diff)
+            graph.add_edge(source_node, user, comment_id=comment.id(), created_time=created_time, time_diff=time_diff.seconds, influence=influence)
             comments.remove(comment)
 
 
@@ -89,7 +92,6 @@ def output_script_file(graph):
     script_file.write('var links = [')
 
     for edge in graph.edges(data=True):
-        # code.interact(local=locals())
         edge_type = 'default'
         if edge[2]['time_diff'] != edge[2]['created_time']:
             edge_type = 'influence'
