@@ -66,7 +66,7 @@ def add_edges(graph, intersection, source_node):
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
             print 'adding edge', source_node, user
-            graph.add_node(user, username=comment.username())
+            graph.add_node(user, username=comment.username(), total_influence=0.0)
             graph.add_edge(source_node, user,
                            comment_id=comment.id(), comment=comment.text(),
                            created_time=created_time, time_diff=time_diff.seconds, influence=influence)
@@ -128,11 +128,12 @@ def calculate_total_influence(graph, root_node, source_node):
 if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
+
     media = me.MediaHelper.get_media(MEDIA_ID)
     comments = co.CommentHelper.get_comment(MEDIA_ID)
 
     G = nx.DiGraph()
-    G.add_node(media.user_id(), username=media.username(), link=media.link())
+    G.add_node(media.user_id(), username=media.username(), link=media.link(), total_influence=0.0)
 
     add_comment(G, media.user_id(), 0)
     calculate_total_influence(G, media.user_id(), media.user_id())
