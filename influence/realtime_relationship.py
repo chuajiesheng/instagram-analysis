@@ -22,21 +22,13 @@ class RealtimeRelationshipHelper:
                 print 'next_url', next_url
                 print 'followed_by', len(followed_by)
 
-        if log:
-            print 'total', len(followers)
+        print insta_user_id, 'have', len(followers), 'followers'
 
         return followers
 
     @staticmethod
     def download(url):
-        response = None
-
-        try:
-            response = urllib.urlopen(url)
-        except urllib.HTTPError, e:
-            print e.fp.read()
-            return None, []
-
+        response = urllib.urlopen(url)
         data = json.loads(response.read())
 
         code = response.getcode()
