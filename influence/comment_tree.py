@@ -17,7 +17,6 @@ MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 JSON_SCRIPT_FILE = 'run/comment_network_{}.js'
 JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", influence: \"%s\", type: \"%s\"},"
 comments = []
-nodes = dict()
 
 
 def get_relationship(source_node):
