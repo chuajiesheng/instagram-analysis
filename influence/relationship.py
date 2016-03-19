@@ -65,7 +65,7 @@ class RelationshipHelper:
             "from": 0,
             "size": 1
         }
-        host = ['http://localhost:9200']
+        host = ['http://10.5.0.61:9200']
         es = Elasticsearch(host)
 
         return es.search(index='instagram', body=query)

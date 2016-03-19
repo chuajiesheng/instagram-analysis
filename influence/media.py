@@ -54,7 +54,7 @@ class MediaHelper:
 
     @staticmethod
     def download(media_id):
-        host = ['http://localhost:9200']
+        host = ['http://10.5.0.61:9200']
         es = Elasticsearch(host)
 
         query = {

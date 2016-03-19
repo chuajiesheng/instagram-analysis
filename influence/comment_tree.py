@@ -232,7 +232,7 @@ def output_csv_file(graph, media_id):
 
 
 if __name__ == '__main__':
-    host = ['http://localhost:9200']
+    host = ['http://10.5.0.61:9200']
     es = Elasticsearch(host)
 
     for media_id in MEDIA_IDS:
