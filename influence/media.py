@@ -41,7 +41,7 @@ class MediaHelper:
     def get_media(media_id, log=False):
         if log:
             print 'downloading media', media_id
-            
+
         json = MediaHelper.download(media_id)
         dataset = json['hits']['hits']
         for obj in dataset:
