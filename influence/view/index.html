@@ -44,20 +44,51 @@
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="../run/comment_network_1101457419536463341_1507143100.js"></script>
+<script src="../run/comment_network_1121729201701872441_2697007.js"></script>
 <script>
+//    var links = [
+//        {source: "Microsoft Hello", target: "Amazon", total_influence: "123", type: "licensing"},
+//        {source: "Microsoft", target: "HTC", total_influence: "123", type: "licensing"},
+//        {source: "Samsung", target: "Apple", total_influence: "123", type: "suit"},
+//        {source: "Motorola", target: "Apple", total_influence: "123", type: "suit"},
+//        {source: "Nokia", target: "Apple", total_influence: "123", type: "resolved"},
+//        {source: "HTC", target: "Apple", total_influence: "123", type: "suit"},
+//        {source: "Kodak", target: "Apple", total_influence: "123", type: "suit"},
+//        {source: "Microsoft", target: "Barnes & Noble", total_influence: "123", type: "suit"},
+//        {source: "Microsoft", target: "Foxconn", total_influence: "123", type: "suit"},
+//        {source: "Oracle", target: "Google", total_influence: "123", type: "suit"},
+//        {source: "Apple", target: "HTC", total_influence: "123", type: "suit"},
+//        {source: "Microsoft", target: "Inventec", total_influence: "123", type: "suit"},
+//        {source: "Samsung", target: "Kodak", total_influence: "123", type: "resolved"},
+//        {source: "LG", target: "Kodak", total_influence: "123", type: "resolved"},
+//        {source: "RIM", target: "Kodak", total_influence: "123", type: "suit"},
+//        {source: "Sony", target: "LG", total_influence: "123", type: "suit"},
+//        {source: "Kodak", target: "LG", total_influence: "123", type: "resolved"},
+//        {source: "Apple", target: "Nokia", total_influence: "123", type: "resolved"},
+//        {source: "Qualcomm", target: "Nokia", total_influence: "123", type: "resolved"},
+//        {source: "Apple", target: "Motorola", total_influence: "123", type: "suit"},
+//        {source: "Microsoft", target: "Motorola", total_influence: "123", type: "suit"},
+//        {source: "Motorola", target: "Microsoft", total_influence: "123", type: "suit"},
+//        {source: "Huawei", target: "ZTE", total_influence: "123", type: "suit"},
+//        {source: "Ericsson", target: "ZTE", total_influence: "123", type: "suit"},
+//        {source: "Kodak", target: "Samsung", total_influence: "123", type: "resolved"},
+//        {source: "Apple", target: "Samsung", total_influence: "123", type: "suit"},
+//        {source: "Kodak", target: "RIM", total_influence: "123", type: "suit"},
+//        {source: "Nokia", target: "Qualcomm", total_influence: "123", type: "suit"}
+//    ];
+
 
     var nodes = {};
 
     // Compute the distinct nodes from the links.
     links.forEach(function (link) {
-        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, total_influence: link.source_total_influence});
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, total_influence: link.target_total_influence});
     });
 
     var width = 1600;
     var height = 800;
-    var link_distance = 60;
+    var link_distance = 200;
     var charge = -300;
 
     var force = d3.layout.force()
@@ -111,7 +142,7 @@
             .attr("x", 8)
             .attr("y", ".31em")
             .text(function (d) {
-                return d.name;
+                return d.name + ", " + parseFloat(d.total_influence).toFixed(2);
             });
 
     // Use elliptical arc path segments to doubly-encode directionality.
@@ -124,7 +155,7 @@
     function linkArc(d) {
         var dx = d.target.x - d.source.x;
         var dy = d.target.y - d.source.y;
-        var dr = 0;
+        var dr = Math.sqrt(dx * dx + dy * dy) * 2;
 
         return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
     }
