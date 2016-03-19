@@ -21,14 +21,16 @@ class RealtimeRelationshipHelper:
             if log:
                 print 'next_url', next_url
                 print 'followed_by', len(followed_by)
-
-        print insta_user_id, 'have', len(followers), 'followers'
+        if log:
+            print insta_user_id, 'have', len(followers), 'followers'
 
         return followers
 
     @staticmethod
-    def download(url):
-        print 'downloading', url
+    def download(url, log=False):
+        if log:
+            print 'downloading', url
+
         response = None
         data = None
 
@@ -36,13 +38,15 @@ class RealtimeRelationshipHelper:
             response = urllib.urlopen(url)
             data = json.loads(response.read())
         except IOError, e:
-            print 'caught', e
-            print 'retrying'
+            if log:
+                print 'caught', e
+                print 'retrying'
             response = urllib.urlopen(url)
             data = json.loads(response.read())
         except ValueError, e:
-            print 'caught', e
-            print 'retrying'
+            if log:
+                print 'caught', e
+                print 'retrying'
             response = urllib.urlopen(url)
             data = json.loads(response.read())
 

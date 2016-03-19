@@ -29,11 +29,13 @@ class RelationshipHelper:
         pass
 
     @staticmethod
-    def get_relationship(insta_user_id):
-        relationship = Relationship(None)
+    def get_relationship(insta_user_id, log=False):
+        if log:
+            print 'get_relationship of', insta_user_id
 
+        relationship = Relationship(None)
         json = RelationshipHelper.download(insta_user_id)
-        print 'get_relationship of', insta_user_id
+
         dataset = json['hits']['hits']
         for obj in dataset:
             r = Relationship(obj['_source'])

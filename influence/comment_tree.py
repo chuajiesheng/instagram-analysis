@@ -37,13 +37,13 @@ def find_intersected_followers(followers):
     return intersection
 
 
-def get_latest_incoming_edge(graph, source_node, comment):
+def get_latest_incoming_edge(graph, source_node, comment, log=False):
     lower_limit = 0
     upper_limit = comment.created_time()
 
     edges = graph.in_edges(source_node, data=True)
 
-    if len(edges) > 0:
+    if log and len(edges) > 0:
         print 'given', source_node, 'found', edges
 
     for edge in edges:
@@ -54,7 +54,7 @@ def get_latest_incoming_edge(graph, source_node, comment):
     return lower_limit
 
 
-def add_edges(graph, intersection, source_node):
+def add_edges(graph, intersection, source_node, log=False):
     for user in intersection:
         comments_by_user = filter(lambda c: c.user_id() == user, comments)
         for comment in comments_by_user:
@@ -64,10 +64,12 @@ def add_edges(graph, intersection, source_node):
             time_diff_in_hours = math.ceil(float(time_diff.seconds) / 60 / 60)
             influence = 1 / time_diff_in_hours
 
-            if time_diff.seconds < 0:
+            if log and time_diff.seconds < 0:
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
-            print 'adding edge', source_node, user
+            if log:
+                print 'adding edge', source_node, user
+
             if user not in graph.node:
                 graph.add_node(user, username=comment.username())
 
@@ -129,7 +131,7 @@ def output_script_file(graph, root_node, media_id):
     script_file.close()
 
 
-def calculate_total_influence(graph, root_node, source_node):
+def calculate_total_influence(graph, root_node, source_node, log=False):
     total_influence = 0.0
     for node in graph[source_node].keys():
         edge = graph[source_node][node]
@@ -137,9 +139,13 @@ def calculate_total_influence(graph, root_node, source_node):
         if node != root_node:
             total_influence += calculate_total_influence(graph, root_node, node)
 
-    print 'total_influence', source_node, total_influence
+
     graph.node[source_node]['total_influence'] = str(total_influence)
     graph.node[source_node]['weight'] = str(total_influence)
+
+    if root_node == source_node:
+        print 'total_influence', source_node, total_influence
+
     return total_influence
 
 
