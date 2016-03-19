@@ -8,13 +8,15 @@ import matplotlib.pyplot as plt
 import math
 import code
 from datetime import datetime
+import csv
 
 
-MEDIA_IDS = ['1121729201701872441_2697007']
+MEDIA_IDS = ['1120309647296943262_285826268']
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 JSON_SCRIPT_FILE = 'run/comment_network_{}.js'
+CSV_FILE = 'run/comment_network_{}.csv'
 JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", source_total_influence: \"%s\", target_total_influence: \"%s\", type: \"%s\"},"
 comments = []
 
@@ -140,6 +142,44 @@ def calculate_total_influence(graph, root_node, source_node):
     graph.node[source_node]['weight'] = str(total_influence)
     return total_influence
 
+
+def output_csv_file(graph, media_id):
+    with open(CSV_FILE.format(media_id), 'w') as csvfile:
+        fieldnames = ['media_id', 'comment_id', 'comment', 'created_time', 'comment_author_id', 'comment_author_name', 'following_user', 'following_user_id', 'time_diff', 'influence']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for node in graph.node.keys():
+            node_name = graph.node[node]['username']
+
+            keys = graph.edge[node].keys()
+            for key in keys:
+                if key in graph.node:
+                    edge = graph.edge[node][key]
+
+                    other_node = graph.node[key]
+                    other_node_name = other_node['username']
+
+                    comment_id = edge['comment_id']
+                    comment = edge['comment']
+                    created_time = edge['created_time']
+                    time_diff = edge['time_diff']
+                    influence = edge['influence']
+
+                    writer.writerow({
+                        'media_id': media_id,
+                        'comment_id': str(comment_id),
+                        'comment': comment.encode('ascii', 'ignore'),
+                        'created_time': created_time,
+                        'comment_author_id': key,
+                        'comment_author_name': other_node_name,
+                        'following_user': node_name,
+                        'following_user_id': node_name,
+                        'time_diff': str(time_diff),
+                        'influence': influence
+                    })
+
+
 if __name__ == '__main__':
     host = ['http://localhost:9200']
     es = Elasticsearch(host)
@@ -159,6 +199,7 @@ if __name__ == '__main__':
 
         calculate_total_influence(G, media.user_id(), media.user_id())
         output_script_file(G, media.user_id(), media_id)
+        output_csv_file(G, media_id)
 
         nx.draw(G)
         plt.show(block=False)
