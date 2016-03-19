@@ -66,10 +66,13 @@ def add_edges(graph, intersection, source_node):
                 print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
 
             print 'adding edge', source_node, user
-            graph.add_node(user, username=comment.username(), total_influence=0.0)
+            if user not in graph.node:
+                graph.add_node(user, username=comment.username())
+
             graph.add_edge(source_node, user,
                            comment_id=comment.id(), comment=comment.text(),
-                           created_time=created_time, time_diff=time_diff.seconds, influence=influence)
+                           created_time=created_time, time_diff=time_diff.seconds,
+                           influence=influence, weight=influence)
             comments.remove(comment)
 
 
@@ -90,23 +93,34 @@ def add_comment(graph, source_node, source_node_level):
     map(lambda c: add_comment(graph, c, source_node_level + 1), intersection)
 
 
-def output_script_file(graph, media_id):
+def output_script_file(graph, root_node, media_id):
     script_file = open(JSON_SCRIPT_FILE.format(media_id), 'w')
     script_file.write('var links = [')
 
-    for edge in graph.edges(data=True):
-        source_node = edge[0]
-        source_node_name = graph.node[source_node]['username']
-
-        node = edge[1]
+    for node in graph.node.keys():
+        # code.interact(local=locals())
         node_name = graph.node[node]['username']
+        node_total_influence = graph.node[node]['total_influence']
 
-        edge_type = 'default'
-        if edge[2]['influence'] > 0:
-            edge_type = 'influence'
+        keys = graph.edge[node].keys()
+        for key in keys:
+            if key in graph.node:
+                edge = graph.edge[node][key]
 
-        script_file.write(JSON_OBJECT_TEMPLATE %
-                          (source_node_name, node_name, graph.node[node]['total_influence'], edge_type))
+                other_node = graph.node[key]
+                other_node_name = other_node['username']
+
+                comment = edge['comment']
+                created_time = edge['created_time']
+                influence = edge['influence']
+
+                edge_type = 'default'
+
+                if node != root_node and influence > 0:
+                    edge_type = 'influence'
+
+                script_file.write(JSON_OBJECT_TEMPLATE %
+                                  (node_name, other_node_name, node_total_influence, edge_type))
 
     script_file.write('];')
     script_file.close()
@@ -117,12 +131,12 @@ def calculate_total_influence(graph, root_node, source_node):
     for node in graph[source_node].keys():
         edge = graph[source_node][node]
         total_influence += edge['influence']
-        # code.interact(local=locals())
         if node != root_node:
             total_influence += calculate_total_influence(graph, root_node, node)
 
     print 'total_influence', source_node, total_influence
-    graph[source_node]['total_influence'] = total_influence
+    graph.node[source_node]['total_influence'] = str(total_influence)
+    graph.node[source_node]['weight'] = str(total_influence)
     return total_influence
 
 if __name__ == '__main__':
@@ -137,17 +151,20 @@ if __name__ == '__main__':
         comments = co.CommentHelper.get_comment(media_id)
 
         G = nx.DiGraph()
-        G.add_node(media.user_id(), username=media.username(), link=media.link(), total_influence=0.0)
+        G.add_node(media.user_id(), username=media.username(), link=media.link())
 
         add_comment(G, media.user_id(), 0)
+        # code.interact(local=locals())
+
         calculate_total_influence(G, media.user_id(), media.user_id())
-
-        output_script_file(G, media_id)
-
-        filename = FILENAME.format(media_id)
-        nx.write_graphml(G, filename)
+        output_script_file(G, media.user_id(), media_id)
 
         nx.draw(G)
         plt.show(block=False)
         plt.savefig(IMAGE_FILENAME.format(media_id), format="PNG")
+
+        filename = FILENAME.format(media_id)
+        nx.write_graphml(G, filename)
+
+
 
