@@ -10,12 +10,12 @@ import code
 from datetime import datetime
 
 
-MEDIA_IDS = ['1101457419536463341_1507143100'] # https://www.instagram.com/p/9fD1TjJc3I/
+MEDIA_IDS = ['1121729201701872441_2697007']
 FILENAME = 'run/comment_network_{}.graphml'
 IMAGE_FILENAME = 'run/comment_network_{}.png'
 MISSING_RELATIONSHIP = 'run/missing_relationship.txt'
 JSON_SCRIPT_FILE = 'run/comment_network_{}.js'
-JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", influence: \"%s\", type: \"%s\"},"
+JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", source_total_influence: \"%s\", target_total_influence: \"%s\", type: \"%s\"},"
 comments = []
 
 
@@ -109,6 +109,7 @@ def output_script_file(graph, root_node, media_id):
 
                 other_node = graph.node[key]
                 other_node_name = other_node['username']
+                other_node_total_influence = other_node['total_influence']
 
                 comment = edge['comment']
                 created_time = edge['created_time']
@@ -120,7 +121,7 @@ def output_script_file(graph, root_node, media_id):
                     edge_type = 'influence'
 
                 script_file.write(JSON_OBJECT_TEMPLATE %
-                                  (node_name, other_node_name, node_total_influence, edge_type))
+                                  (node_name, other_node_name, node_total_influence, other_node_total_influence, edge_type))
 
     script_file.write('];')
     script_file.close()
