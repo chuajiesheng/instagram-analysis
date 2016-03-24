@@ -7,5 +7,5 @@ class ElasticSearchHelper:
 
     def get_es(self):
         host = ['http://localhost:9200']
-        es = Elasticsearch(host)
+        es = Elasticsearch(host, timeout=3000)
         return es

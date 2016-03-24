@@ -148,15 +148,19 @@ class CommentTree:
         graph.node[source_node]['total_influence'] = str(total_influence)
         graph.node[source_node]['weight'] = str(total_influence)
 
+        influence_base = graph.node[root_node]['no_of_followers']
+        if root_node != source_node:
+            influence_base += graph.node[source_node]['no_of_followers']
+
+        try:
+            normalised_influence = total_influence / influence_base
+        except ZeroDivisionError:
+            normalised_influence = 0
+
+        graph.node[source_node]['normalised_influence'] = str(normalised_influence)
+
         if root_node == source_node:
-            influence_base = graph.node[root_node]['no_of_followers']
-            normalised_influence = total_influence / influence_base
-            graph.node[source_node]['normalised_influence'] = str(normalised_influence)
             print 'total_influence', source_node, total_influence
-        else:
-            influence_base = graph.node[root_node]['no_of_followers'] + graph.node[source_node]['no_of_followers']
-            normalised_influence = total_influence / influence_base
-            graph.node[source_node]['normalised_influence'] = str(normalised_influence)
 
         return total_influence
 
@@ -197,11 +201,12 @@ class CommentTree:
                         })
 
     def log_result(self, graph, media_id, root_node):
+        fieldnames = ['media_id', 'media_author', 'media_author_followers',
+                      'media_link', 'media_no_comments', 'total_influence',
+                      'normalised_influence', 'tags']
+
         if not os.path.isfile(self.CSV_RESULT_FILE):
             with open(self.CSV_RESULT_FILE, 'w') as csvfile:
-                fieldnames = ['media_id', 'media_author', 'media_author_followers',
-                              'media_link', 'media_no_comments', 'total_influence',
-                              'normalised_influence', 'tags']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
 
@@ -211,9 +216,10 @@ class CommentTree:
         media_no_comments = self.total_comments
         total_influence = graph.node[root_node]['total_influence']
         normalised_influence = graph.node[root_node]['normalised_influence']
-        tags = '|'.join([str(s) for s in graph.node[root_node]['tags']])
+        tags = graph.node[root_node]['tags']
 
         with open(self.CSV_RESULT_FILE, 'a') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow({
                 'media_id': media_id,
                 'media_author': media_author,

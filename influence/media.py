@@ -22,7 +22,7 @@ class Media:
         return self.json['link']
 
     def tags(self):
-        return self.json['tags']
+        return '|'.join([str(s) for s in self.json['tags']])
 
     def caption_id(self):
         return self.caption()['id']
