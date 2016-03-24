@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch
+import elastic as e
 
 es = None
 
@@ -20,6 +20,9 @@ class Media:
 
     def link(self):
         return self.json['link']
+
+    def tags(self):
+        return self.json['tags']
 
     def caption_id(self):
         return self.caption()['id']
@@ -54,8 +57,7 @@ class MediaHelper:
 
     @staticmethod
     def download(media_id):
-        host = ['http://10.5.0.61:9200']
-        es = Elasticsearch(host)
+        es = e.ElasticSearchHelper().get_es()
 
         query = {
             "query": {

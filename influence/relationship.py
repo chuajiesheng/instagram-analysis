@@ -1,6 +1,6 @@
 import os
 import json
-from elasticsearch import Elasticsearch
+import elastic as e
 
 
 class Relationship:
@@ -65,8 +65,7 @@ class RelationshipHelper:
             "from": 0,
             "size": 1
         }
-        host = ['http://10.5.0.61:9200']
-        es = Elasticsearch(host)
+        es = e.ElasticSearchHelper().get_es()
 
         return es.search(index='instagram', body=query)
 
