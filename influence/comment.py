@@ -50,6 +50,9 @@ class CommentHelper:
         if json is None:
             return []
 
+        if 'data' not in json.keys():
+            print json
+
         dataset = json['data']
         for obj in dataset:
             comments.append(Comment(obj))
