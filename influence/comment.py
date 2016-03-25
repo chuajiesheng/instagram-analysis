@@ -47,7 +47,7 @@ class CommentHelper:
 
         json = CommentHelper.download(media_id)
 
-        if json == '400':
+        if json == 400:
             return []
 
         dataset = json['data']
