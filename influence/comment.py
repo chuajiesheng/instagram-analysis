@@ -55,7 +55,7 @@ class CommentHelper:
     @staticmethod
     def download(media_id):
         download_url = DOWNLOAD_URL.format(media_id)
-        response = urllib.urlopen(download_url, timeout=300)
+        response = urllib.urlopen(download_url)
         data = json.loads(response.read())
         return data
 
