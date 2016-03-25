@@ -1,6 +1,6 @@
 import urllib, json
 
-DOWNLOAD_URL = 'http://iconosquare.com/controller_nl.php?action=nlGetMethod&method=mediaComments&value={}'
+DOWNLOAD_URL = 'https://api.instagram.com/v1/media/{}/comments?access_token=198845160.b59fbe4.d5c35ad8c01543fcac377219fffb805e'
 
 
 class Comment:
