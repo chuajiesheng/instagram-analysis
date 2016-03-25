@@ -46,6 +46,10 @@ class CommentHelper:
         comments = []
 
         json = CommentHelper.download(media_id)
+
+        if json == '400':
+            return []
+
         dataset = json['data']
         for obj in dataset:
             comments.append(Comment(obj))
