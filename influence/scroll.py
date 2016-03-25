@@ -41,6 +41,9 @@ class Scroll:
                         ]
                     }
                 },
+                "sort": [
+                    "_doc"
+                ],
                 "size": 5
 
             })
