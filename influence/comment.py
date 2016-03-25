@@ -1,6 +1,8 @@
-import urllib, json
+import urllib
+import json
 
-DOWNLOAD_URL = 'https://api.instagram.com/v1/media/{}/comments?access_token=198845160.b59fbe4.d5c35ad8c01543fcac377219fffb805e'
+ACCESS_TOKEN = '3067414468.b59fbe4.bfd922cb49fb401e9c2c08ba537f1b4b'
+DOWNLOAD_URL = 'https://api.instagram.com/v1/media/{}/comments?access_token=%s' % ACCESS_TOKEN
 
 
 class Comment:

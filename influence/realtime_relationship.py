@@ -1,7 +1,7 @@
 import json
 import urllib
 
-ACCESS_TOKEN = '198845160.b59fbe4.d5c35ad8c01543fcac377219fffb805e'
+ACCESS_TOKEN = '3067414468.b59fbe4.bfd922cb49fb401e9c2c08ba537f1b4b'
 URL = 'https://api.instagram.com/v1/users/{}/followed-by?access_token={}'
 
 
