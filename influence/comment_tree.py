@@ -249,7 +249,7 @@ class CommentTree:
         total_influence = graph.node[root_node]['total_influence']
         normalised_influence = graph.node[root_node]['normalised_influence']
         tags = graph.node[root_node]['tags']
-        no_of_tags = self.media.no_of_tags()
+        no_of_tags = self.current_media.no_of_tags()
         max_depth = self.deepest_level
 
         with open(self.CSV_RESULT_FILE, 'a') as csvfile:
