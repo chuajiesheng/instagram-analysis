@@ -1,9 +1,13 @@
 import elastic as e
 import comment_tree as ct
+import requests
+import json
+import code
 
 
 class Scroll:
     done = 0
+    sid = None
 
     def __init__(self):
         self.done = 0
@@ -14,7 +18,7 @@ class Scroll:
         page = es.search(
             index='instagram',
             doc_type='media',
-            scroll='300m',
+            scroll='30m',
             search_type='scan',
             body={
                 "query": {
@@ -37,24 +41,35 @@ class Scroll:
                         ]
                     }
                 },
-                "size": 5000000
+                "size": 5
 
             })
-        sid = page['_scroll_id']
+        self.sid = page['_scroll_id']
         scroll_size = page['hits']['total']
+        # code.interact(local=locals())
 
         # Start scrolling
-        while (scroll_size > 0):
-            print "Scrolling..."
-            page = es.scroll(scroll_id=sid, scroll='2m')
+        while scroll_size > 0:
+            print "scrolling..."
+            page = es.scroll(scroll_id=self.sid, scroll='2m')
             # Update the scroll ID
-            sid = page['_scroll_id']
+            self.sid = page['_scroll_id']
             # Get the number of results that we returned in the last scroll
-            scroll_size = len(page['hits']['hits'])
+            results = page['hits']['hits']
+            scroll_size = len(results)
             print "scroll size: " + str(scroll_size)
-            # Do something with the obtained page
+
+            medias = [result['_source']['id'] for result in results]
+            ct.CommentTree.generate_all(medias)
+
+    def end_session(self):
+        payload = {'scroll_id': [self.sid]}
+        url = e.ElasticSearchHelper.HOST + '/_search/scroll'
+        response = requests.delete(url, data=json.dumps(payload))
+        return response.status_code == requests.codes.ok
 
 
 if __name__ == '__main__':
     s = Scroll()
     s.start()
+    s.end_session()

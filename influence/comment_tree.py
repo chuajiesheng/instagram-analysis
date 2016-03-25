@@ -267,7 +267,7 @@ class CommentTree:
                 'max_depth': max_depth
             })
 
-    def generate_graph(self):
+    def generate_graph(self, result_only=False):
         media_id = self.media_id
 
         print 'running', media_id
@@ -285,16 +285,19 @@ class CommentTree:
         # code.interact(local=locals())
 
         self.calculate_influence(self.current_media.user_id())
-        self.output_script_file()
-        self.output_csv_file()
+
+        if not result_only:
+            self.output_script_file()
+            self.output_csv_file()
+
+            nx.draw(self.G)
+            plt.show(block=False)
+            plt.savefig(self.IMAGE_FILENAME.format(media_id), format="PNG")
+
+            filename = self.FILENAME.format(media_id)
+            nx.write_graphml(self.G, filename)
+
         self.log_result()
-
-        nx.draw(self.G)
-        plt.show(block=False)
-        plt.savefig(self.IMAGE_FILENAME.format(media_id), format="PNG")
-
-        filename = self.FILENAME.format(media_id)
-        nx.write_graphml(self.G, filename)
 
     @staticmethod
     def generate_all(medias):
