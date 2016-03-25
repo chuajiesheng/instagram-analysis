@@ -185,7 +185,13 @@ class CommentTree:
         graph.node[source_node]['normalised_influence'] = str(normalised_influence)
 
         if root_node == source_node:
-            print 'total_influence', source_node, total_influence
+            total_normalised_influence = 0.0
+            for node in graph[source_node].keys():
+                edge = graph[source_node][node]
+                total_normalised_influence += edge['normalised_influence']
+
+            graph.node[source_node]['total_normalised_influence'] = str(total_normalised_influence)
+            print 'total_normalised_influence', source_node, total_normalised_influence
 
         return total_influence
 
@@ -247,7 +253,7 @@ class CommentTree:
         media_link = graph.node[root_node]['link']
         media_no_comments = self.total_comments
         total_influence = graph.node[root_node]['total_influence']
-        normalised_influence = graph.node[root_node]['normalised_influence']
+        normalised_influence = graph.node[root_node]['total_normalised_influence']
         tags = graph.node[root_node]['tags']
         no_of_tags = self.current_media.no_of_tags()
         max_depth = self.deepest_level
