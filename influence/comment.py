@@ -66,6 +66,10 @@ class CommentHelper:
             return None
 
         data = json.loads(result)
+
+        if 'meta' in data.keys() and 'code' in data['meta'].keys() and data['meta']['code'] == 400:
+            return None
+
         return data
 
 
