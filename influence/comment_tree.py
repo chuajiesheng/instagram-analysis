@@ -182,6 +182,7 @@ class CommentTree:
             influence_base = graph.node[root_node]['no_of_followers'] + graph.node[source_node]['no_of_followers']
 
         try:
+            print source_node, total_influence, influence_base
             normalised_influence = total_influence / influence_base
         except ZeroDivisionError:
             normalised_influence = 0
