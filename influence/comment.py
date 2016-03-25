@@ -47,7 +47,7 @@ class CommentHelper:
 
         json = CommentHelper.download(media_id)
 
-        if json == 400:
+        if json is None:
             return []
 
         dataset = json['data']
@@ -60,7 +60,12 @@ class CommentHelper:
     def download(media_id):
         download_url = DOWNLOAD_URL.format(media_id)
         response = urllib.urlopen(download_url)
-        data = json.loads(response.read())
+        result = response.read()
+
+        if result == '' or result == '400':
+            return None
+
+        data = json.loads(result)
         return data
 
 
