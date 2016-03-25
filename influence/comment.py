@@ -2,7 +2,8 @@ import urllib
 import json
 
 ACCESS_TOKEN = '3067414468.b59fbe4.bfd922cb49fb401e9c2c08ba537f1b4b'
-DOWNLOAD_URL = 'https://api.instagram.com/v1/media/{}/comments?access_token=%s' % ACCESS_TOKEN
+INSTAGRAM_DOWNLOAD_URL = 'https://api.instagram.com/v1/media/{}/comments?access_token=%s' % ACCESS_TOKEN
+DOWNLOAD_URL = 'http://iconosquare.com/controller_nl.php?action=nlGetMethod&method=mediaComments&value={}'
 
 
 class Comment:
