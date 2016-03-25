@@ -6,6 +6,8 @@ import code
 
 
 class Scroll:
+    SCROLL_TIME = '30m'
+
     done = 0
     sid = None
 
@@ -18,7 +20,7 @@ class Scroll:
         page = es.search(
             index='instagram',
             doc_type='media',
-            scroll='30m',
+            scroll=self.SCROLL_TIME,
             search_type='scan',
             body={
                 "query": {
@@ -54,7 +56,7 @@ class Scroll:
         # Start scrolling
         while scroll_size > 0:
             print "scrolling..."
-            page = es.scroll(scroll_id=self.sid, scroll='2m')
+            page = es.scroll(scroll_id=self.sid, scroll=self.SCROLL_TIME)
             # Update the scroll ID
             self.sid = page['_scroll_id']
             # Get the number of results that we returned in the last scroll
