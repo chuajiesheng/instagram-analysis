@@ -1,4 +1,5 @@
 import elastic as e
+import string
 
 es = None
 
@@ -22,7 +23,7 @@ class Media:
         return self.json['link']
 
     def tags(self):
-        return '|'.join([str(s) for s in self.json['tags']])
+        return '|'.join([self.clean_string(s) for s in self.json['tags']])
 
     def caption_id(self):
         return self.caption()['id']
@@ -35,6 +36,13 @@ class Media:
 
     def user_id(self):
         return self.user()['id']
+
+    def clean_string(str):
+        if str is None:
+            return ''
+
+        printable = set(string.printable)
+        return filter(lambda s: s in printable, str)
 
 class MediaHelper:
     def __init__(self):
