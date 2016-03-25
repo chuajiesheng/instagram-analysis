@@ -133,7 +133,9 @@ class CommentTree:
         for node in graph.node.keys():
             # code.interact(local=locals())
             node_name = graph.node[node]['username']
-            node_total_influence = graph.node[node]['total_influence']
+            node_total_influence = graph.node[node]['normalised_influence']
+            if node == root_node:
+                node_total_influence = graph.node[node]['total_normalised_influence']
 
             keys = graph.edge[node].keys()
             for key in keys:
@@ -142,7 +144,9 @@ class CommentTree:
 
                     other_node = graph.node[key]
                     other_node_name = other_node['username']
-                    other_node_total_influence = other_node['total_influence']
+                    other_node_total_influence = other_node['normalised_influence']
+                    if key == root_node:
+                        other_node_total_influence = other_node['total_normalised_influence']
 
                     comment = edge['comment']
                     created_time = edge['created_time']
