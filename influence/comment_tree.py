@@ -173,9 +173,9 @@ class CommentTree:
         graph.node[source_node]['total_influence'] = str(total_influence)
         graph.node[source_node]['weight'] = str(total_influence)
 
-        influence_base = graph.node[root_node]['no_of_followers']
+        influence_base = 1
         if root_node != source_node:
-            influence_base += graph.node[source_node]['no_of_followers']
+            influence_base = graph.node[root_node]['no_of_followers'] + graph.node[source_node]['no_of_followers']
 
         try:
             normalised_influence = total_influence / influence_base
