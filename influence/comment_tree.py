@@ -21,17 +21,15 @@ class CommentTree:
     CSV_RESULT_FILE = 'run/results.csv'
     JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", source_total_influence: \"%s\", target_total_influence: \"%s\", type: \"%s\"},"
 
-    medias = []
-
+    media_id = None
     G = None
     current_media = None
     comments = None
     total_comments = 0
     deepest_level = 0
 
-    def __init__(self, medias=[]):
-        self.medias = medias
-
+    def __init__(self, media_id):
+        self.media_id = media_id
         self.G = None
         self.current_media = None
         self.comments = []
@@ -269,7 +267,9 @@ class CommentTree:
                 'max_depth': max_depth
             })
 
-    def generate_graph(self, media_id):
+    def generate_graph(self):
+        media_id = self.media_id
+
         print 'running', media_id
         self.comments = []
 
@@ -296,16 +296,11 @@ class CommentTree:
         filename = self.FILENAME.format(media_id)
         nx.write_graphml(self.G, filename)
 
-    def generate_all(self):
-        for media_id in self.medias:
-
-            self.G = None
-            self.current_media = None
-            self.comments = []
-            self.total_comments = 0
-            self.deepest_level = 0
-
-            self.generate_graph(media_id)
+    @staticmethod
+    def generate_all(medias):
+        for media_id in medias:
+            c = CommentTree(media_id)
+            c.generate_graph()
 
 
 MEDIA_IDS = ['1120521602937694152_511289136',
@@ -356,8 +351,7 @@ MEDIA_IDS = ['1120521602937694152_511289136',
 
 if __name__ == '__main__':
     es = e.ElasticSearchHelper().get_es()
-    c = CommentTree(MEDIA_IDS)
-    c.generate_all()
+    CommentTree.generate_all(MEDIA_IDS)
 
 
 
