@@ -187,8 +187,7 @@ class CommentTree:
         if root_node == source_node:
             total_normalised_influence = 0.0
             for node in graph[source_node].keys():
-                edge = graph[source_node][node]
-                total_normalised_influence += edge['normalised_influence']
+                total_normalised_influence += graph.node[node]['normalised_influence']
 
             graph.node[source_node]['total_normalised_influence'] = str(total_normalised_influence)
             print 'total_normalised_influence', source_node, total_normalised_influence
