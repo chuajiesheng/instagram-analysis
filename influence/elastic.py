@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 
 
 class ElasticSearchHelper:
-    HOST = 'http://localhost:9200'
+    HOST = 'http://10.5.0.61:9200'
 
     def __init__(self):
         pass
