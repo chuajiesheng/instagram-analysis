@@ -182,7 +182,7 @@ class CommentTree:
         except ZeroDivisionError:
             normalised_influence = 0
 
-        graph.node[source_node]['normalised_influence'] = str(normalised_influence)
+        graph.node[source_node]['normalised_influence'] = normalised_influence
 
         if root_node == source_node:
             total_normalised_influence = 0.0
