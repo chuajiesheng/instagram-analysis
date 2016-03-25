@@ -22,13 +22,21 @@ class CommentTree:
     JSON_OBJECT_TEMPLATE = "{source: \"%s\", target: \"%s\", source_total_influence: \"%s\", target_total_influence: \"%s\", type: \"%s\"},"
 
     medias = []
+
+    G = None
+    current_media = None
     comments = None
     total_comments = 0
+    deepest_level = 0
 
     def __init__(self, medias=[]):
         self.medias = medias
+
+        self.G = None
+        self.current_media = None
         self.comments = []
         self.total_comments = 0
+        self.deepest_level = 0
 
     def get_relationship(self, source_node):
         followers = rs.RelationshipHelper.get_relationship(source_node).followers()
@@ -44,7 +52,9 @@ class CommentTree:
         intersection = followers_set.intersection(comment_user_set)
         return intersection
 
-    def get_latest_incoming_edge(self, graph, source_node, comment, log=False):
+    def get_latest_incoming_edge(self, source_node, comment, log=False):
+        graph = self.G
+
         lower_limit = 0
         upper_limit = comment.created_time()
 
@@ -60,15 +70,21 @@ class CommentTree:
 
         return lower_limit
 
-    def add_edges(self, graph, intersection, source_node, log=False):
+    def add_edges(self, intersection, source_node, log=False):
+        graph = self.G
+
         for user in intersection:
             comments_by_user = filter(lambda c: c.user_id() == user, self.comments)
             for comment in comments_by_user:
                 created_time = comment.created_time()
-                latest_influence_comment = self.get_latest_incoming_edge(graph, source_node, comment)
+                latest_influence_comment = self.get_latest_incoming_edge(source_node, comment)
                 time_diff = datetime.utcfromtimestamp(float(created_time)) - datetime.utcfromtimestamp(float(latest_influence_comment))
                 time_diff_in_hours = math.ceil(float(time_diff.seconds) / 60 / 60)
-                influence = 1 / time_diff_in_hours
+
+                if source_node == self.current_media.user_id():
+                    influence = 0
+                else:
+                    influence = 1 / time_diff_in_hours
 
                 if log and time_diff.seconds < 0:
                     print 'comment', comment.id(), 'created on', created_time, 'but previous comment created', latest_influence_comment
@@ -85,11 +101,15 @@ class CommentTree:
                                influence=influence, weight=influence)
                 self.comments.remove(comment)
 
-    def add_comment(self, graph, source_node, source_node_level):
+    def add_comment(self, source_node, source_node_level):
+        graph = self.G
         graph.node[source_node]['no_of_followers'] = 0
 
-        if source_node_level > 5:
+        if source_node_level > 10:
             return
+
+        if source_node_level > self.deepest_level:
+            self.deepest_level = source_node_level
 
         followers = self.get_relationship(source_node)
 
@@ -101,10 +121,14 @@ class CommentTree:
 
         graph.node[source_node]['no_of_followers'] = len(followers)
         intersection = self.find_intersected_followers(followers)
-        self.add_edges(graph, intersection, source_node)
-        map(lambda c: self.add_comment(graph, c, source_node_level + 1), intersection)
+        self.add_edges(intersection, source_node)
+        map(lambda c: self.add_comment(c, source_node_level + 1), intersection)
 
-    def output_script_file(self, graph, root_node, media_id):
+    def output_script_file(self):
+        graph = self.G
+        media_id = self.current_media.id()
+        root_node = self.current_media.user_id()
+
         script_file = open(self.JSON_SCRIPT_FILE.format(media_id), 'w')
         script_file.write('var links = [')
 
@@ -137,13 +161,16 @@ class CommentTree:
         script_file.write('];')
         script_file.close()
 
-    def calculate_influence(self, graph, root_node, source_node, log=False):
+    def calculate_influence(self, source_node, log=False):
+        graph = self.G
+        root_node = self.current_media.user_id()
+
         total_influence = 0.0
         for node in graph[source_node].keys():
             edge = graph[source_node][node]
             total_influence += edge['influence']
             if node != root_node:
-                total_influence += self.calculate_influence(graph, root_node, node)
+                total_influence += self.calculate_influence(node)
 
         graph.node[source_node]['total_influence'] = str(total_influence)
         graph.node[source_node]['weight'] = str(total_influence)
@@ -164,7 +191,10 @@ class CommentTree:
 
         return total_influence
 
-    def output_csv_file(self, graph, media_id):
+    def output_csv_file(self):
+        graph = self.G
+        media_id = self.current_media.id()
+
         with open(self.CSV_FILE.format(media_id), 'w') as csvfile:
             fieldnames = ['media_id', 'comment_id', 'comment', 'created_time', 'comment_author_id', 'comment_author_name', 'following_user', 'following_user_id', 'time_diff', 'influence']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -200,10 +230,14 @@ class CommentTree:
                             'influence': influence
                         })
 
-    def log_result(self, graph, media_id, root_node):
+    def log_result(self):
         fieldnames = ['media_id', 'media_author', 'media_author_followers',
                       'media_link', 'media_no_comments', 'total_influence',
-                      'normalised_influence', 'tags']
+                      'normalised_influence', 'tags', 'no_of_tags', 'max_depth']
+
+        graph = self.G
+        media_id = self.current_media.id()
+        root_node = self.current_media.user_id()
 
         if not os.path.isfile(self.CSV_RESULT_FILE):
             with open(self.CSV_RESULT_FILE, 'w') as csvfile:
@@ -217,6 +251,8 @@ class CommentTree:
         total_influence = graph.node[root_node]['total_influence']
         normalised_influence = graph.node[root_node]['normalised_influence']
         tags = graph.node[root_node]['tags']
+        no_of_tags = self.media.no_of_tags()
+        max_depth = self.deepest_level
 
         with open(self.CSV_RESULT_FILE, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -228,37 +264,47 @@ class CommentTree:
                 'media_no_comments': str(media_no_comments),
                 'total_influence': str(total_influence),
                 'normalised_influence': str(normalised_influence),
-                'tags': tags
+                'tags': tags,
+                'no_of_tags': no_of_tags,
+                'max_depth': max_depth
             })
 
     def generate_graph(self, media_id):
         print 'running', media_id
         self.comments = []
 
-        media = me.MediaHelper.get_media(media_id)
+        self.current_media = me.MediaHelper.get_media(media_id)
         self.comments = co.CommentHelper.get_comment(media_id)
         self.total_comments = len(self.comments)
 
-        G = nx.DiGraph()
-        G.add_node(media.user_id(), username=media.username(), link=media.link(), tags=media.tags())
+        self.G = nx.DiGraph()
+        self.G.add_node(self.current_media.user_id(), username=self.current_media.username(),
+                   link=self.current_media.link(), tags=self.current_media.tags())
 
-        self.add_comment(G, media.user_id(), 0)
+        self.add_comment(self.current_media.user_id(), 0)
         # code.interact(local=locals())
 
-        self.calculate_influence(G, media.user_id(), media.user_id())
-        self.output_script_file(G, media.user_id(), media_id)
-        self.output_csv_file(G, media_id)
-        self.log_result(G, media_id, media.user_id())
+        self.calculate_influence(self.current_media.user_id())
+        self.output_script_file()
+        self.output_csv_file()
+        self.log_result()
 
-        nx.draw(G)
+        nx.draw(self.G)
         plt.show(block=False)
         plt.savefig(self.IMAGE_FILENAME.format(media_id), format="PNG")
 
         filename = self.FILENAME.format(media_id)
-        nx.write_graphml(G, filename)
+        nx.write_graphml(self.G, filename)
 
     def generate_all(self):
         for media_id in self.medias:
+
+            self.G = None
+            self.current_media = None
+            self.comments = []
+            self.total_comments = 0
+            self.deepest_level = 0
+
             self.generate_graph(media_id)
 
 

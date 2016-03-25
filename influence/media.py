@@ -25,6 +25,9 @@ class Media:
     def tags(self):
         return '|'.join([self.clean_string(s) for s in self.json['tags']])
 
+    def no_of_tags(self):
+        return len(self.json['tags'])
+
     def caption_id(self):
         return self.caption()['id']
 
