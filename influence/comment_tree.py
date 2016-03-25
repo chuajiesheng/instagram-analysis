@@ -306,10 +306,10 @@ class CommentTree:
         self.log_result()
 
     @staticmethod
-    def generate_all(medias):
+    def generate_all(medias, result_only=False):
         for media_id in medias:
             c = CommentTree(media_id)
-            c.generate_graph()
+            c.generate_graph(result_only=result_only)
 
 
 MEDIA_IDS = ['1120521602937694152_511289136',

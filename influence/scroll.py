@@ -65,7 +65,7 @@ class Scroll:
             print "scroll size: " + str(scroll_size)
 
             medias = [result['_source']['id'] for result in results]
-            ct.CommentTree.generate_all(medias)
+            ct.CommentTree.generate_all(medias, result_only=True)
 
     def end_session(self):
         payload = {'scroll_id': [self.sid]}
