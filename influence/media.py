@@ -37,7 +37,7 @@ class Media:
     def user_id(self):
         return self.user()['id']
 
-    def clean_string(str):
+    def clean_string(self, str):
         if str is None:
             return ''
 
