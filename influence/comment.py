@@ -71,7 +71,11 @@ class CommentHelper:
         if result == '' or result == '400':
             return None
 
-        data = json.loads(result)
+        try:
+            data = json.loads(result)
+        except ValueError, e:
+            print media_id, e, 'for', result
+            return None
 
         if 'meta' in data.keys() and 'code' in data['meta'].keys() and data['meta']['code'] == 400:
             return None
