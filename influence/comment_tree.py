@@ -208,8 +208,7 @@ class CommentTree:
         root_node = self.current_media.user_id()
 
         total_no_of_influence = 0.0
-        code.interact(local=locals())
-        for edge in graph.edges:
+        for edge in graph.edges(data=True):
             if edge[2]['influence'] > 0:
                 total_no_of_influence += 1
         graph.node[root_node]['total_no_of_influence'] = str(total_no_of_influence)
@@ -258,7 +257,8 @@ class CommentTree:
     def log_result(self):
         fieldnames = ['media_id', 'media_author', 'media_author_followers',
                       'media_link', 'media_no_comments', 'total_influence',
-                      'normalised_influence', 'tags', 'no_of_tags', 'max_depth']
+                      'normalised_influence', 'total_no_of_influence',
+                      'tags', 'no_of_tags', 'max_depth']
 
         graph = self.G
         media_id = self.current_media.id()
@@ -275,6 +275,7 @@ class CommentTree:
         media_no_comments = self.total_comments
         total_influence = graph.node[root_node]['total_influence']
         normalised_influence = graph.node[root_node]['total_normalised_influence']
+        total_no_of_influence = graph.node[root_node]['total_no_of_influence']
         tags = graph.node[root_node]['tags']
         no_of_tags = self.current_media.no_of_tags()
         max_depth = self.deepest_level
@@ -289,6 +290,7 @@ class CommentTree:
                 'media_no_comments': str(media_no_comments),
                 'total_influence': str(total_influence),
                 'normalised_influence': str(normalised_influence),
+                'total_no_of_influence': str(total_no_of_influence),
                 'tags': tags,
                 'no_of_tags': no_of_tags,
                 'max_depth': max_depth
