@@ -190,16 +190,31 @@ class CommentTree:
 
         graph.node[source_node]['normalised_influence'] = normalised_influence
 
-        if root_node == source_node:
-            total_normalised_influence = 0.0
-            for node in graph[source_node].keys():
-                total_normalised_influence += graph.node[node]['normalised_influence']
-
-            graph.node[source_node]['total_normalised_influence'] = str(total_normalised_influence)
-            if log:
-                print 'total_normalised_influence', source_node, total_normalised_influence
-
         return total_influence
+
+    def calculate_total_normalised_influence(self, log=False):
+        graph = self.G
+        root_node = self.current_media.user_id()
+
+        total_normalised_influence = 0.0
+        for node in graph[root_node].keys():
+            total_normalised_influence += graph.node[node]['normalised_influence']
+        graph.node[root_node]['total_normalised_influence'] = str(total_normalised_influence)
+        if log:
+            print 'total_normalised_influence', root_node, total_normalised_influence
+
+    def calculate_no_of_normalised_influence(self, log=False):
+        graph = self.G
+        root_node = self.current_media.user_id()
+
+        total_no_of_influence = 0.0
+        code.interact(local=locals())
+        for edge in graph.edges:
+            if edge[2]['influence'] > 0:
+                total_no_of_influence += 1
+        graph.node[root_node]['total_no_of_influence'] = str(total_no_of_influence)
+        if log:
+            print 'total_no_of_influence', root_node, total_no_of_influence
 
     def output_csv_file(self):
         graph = self.G
@@ -297,6 +312,8 @@ class CommentTree:
         # code.interact(local=locals())
 
         self.calculate_influence(self.current_media.user_id())
+        self.calculate_total_normalised_influence()
+        self.calculate_no_of_normalised_influence()
 
         if not result_only:
             self.output_script_file()
